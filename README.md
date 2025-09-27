@@ -1,1 +1,2 @@
 # AscensionRadar2026
+This repository is specifically configured to run on the Nvidia Jetson Orin Nano on VSCode. A cmake will be created in the future so that this code can be used on a variety of systems. 
