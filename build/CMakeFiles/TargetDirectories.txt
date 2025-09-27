@@ -1,0 +1,3 @@
+/home/eric/AscensionRadar2026/build/CMakeFiles/main.dir
+/home/eric/AscensionRadar2026/build/CMakeFiles/edit_cache.dir
+/home/eric/AscensionRadar2026/build/CMakeFiles/rebuild_cache.dir
