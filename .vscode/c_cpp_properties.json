@@ -6,7 +6,10 @@
         "${workspaceFolder}/**",
         "/usr/include",
         "/usr/include/opencv4",
-        "/usr/include/opencv4/opencv2"
+        "/usr/include/opencv4/opencv2",
+        "/usr/include/aarch64-linux-gnu",
+        "/usr/local/cuda/include",
+        "include"
       ],
       "defines": [],
       "compilerPath": "/usr/bin/g++",
