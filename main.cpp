@@ -1,12 +1,13 @@
 #include "functions.h"
 #include "NvInfer.h"
 #include "NvOnnxParser.h"
-
+#include <opencv2/opencv.hpp>
 #include <fstream>
 #include <memory>
 using namespace nvinfer1;
 using namespace nvonnxparser;
 using namespace std;
+using namespace cv;
 
 const int MAX_IMAGE_SIZE = 4096 * 4096;
 static uint8_t* img_buffer_host = nullptr;
@@ -74,5 +75,17 @@ int main(){
     Logger logger;
     init("yolov12n.engine", logger);
     cout << "eh" << endl;
+    VideoCapture cap(0);
+    namedWindow("Webcam", WINDOW_AUTOSIZE);
+    Mat frame;
+    while(true){
+        cap >> frame;
+        imshow("Webcam", frame);
+        if (cv::waitKey(1) == 'q') {
+            break;
+        }
+    }
+    cap.release();
+    cv::destroyAllWindows();
     return 0;
 }

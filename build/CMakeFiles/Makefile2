@@ -63,7 +63,7 @@ CMAKE_BINARY_DIR = /home/eric/AscensionRadar2026/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/main.dir/all
+all: CMakeFiles/Radar.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,34 +71,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/main.dir/clean
+clean: CMakeFiles/Radar.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/main.dir
+# Target rules for target CMakeFiles/Radar.dir
 
 # All Build rule for target.
-CMakeFiles/main.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/eric/AscensionRadar2026/build/CMakeFiles --progress-num=1,2 "Built target main"
-.PHONY : CMakeFiles/main.dir/all
+CMakeFiles/Radar.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/eric/AscensionRadar2026/build/CMakeFiles --progress-num=1,2 "Built target Radar"
+.PHONY : CMakeFiles/Radar.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/main.dir/rule: cmake_check_build_system
+CMakeFiles/Radar.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/eric/AscensionRadar2026/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/main.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Radar.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/eric/AscensionRadar2026/build/CMakeFiles 0
-.PHONY : CMakeFiles/main.dir/rule
+.PHONY : CMakeFiles/Radar.dir/rule
 
 # Convenience name for target.
-main: CMakeFiles/main.dir/rule
-.PHONY : main
+Radar: CMakeFiles/Radar.dir/rule
+.PHONY : Radar
 
 # clean rule for target.
-CMakeFiles/main.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/clean
-.PHONY : CMakeFiles/main.dir/clean
+CMakeFiles/Radar.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/clean
+.PHONY : CMakeFiles/Radar.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.
