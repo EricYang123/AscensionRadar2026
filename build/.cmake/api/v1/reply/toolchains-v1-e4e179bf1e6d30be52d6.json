@@ -5,11 +5,14 @@
 		{
 			"compiler" : 
 			{
-				"id" : "GNU",
+				"id" : "NVIDIA",
 				"implicit" : 
 				{
 					"includeDirectories" : 
 					[
+						"/usr/include/c++/11",
+						"/usr/include/aarch64-linux-gnu/c++/11",
+						"/usr/include/c++/11/backward",
 						"/usr/lib/gcc/aarch64-linux-gnu/11/include",
 						"/usr/local/include",
 						"/usr/include/aarch64-linux-gnu",
@@ -17,6 +20,8 @@
 					],
 					"linkDirectories" : 
 					[
+						"/usr/local/cuda-12.6/targets/aarch64-linux/lib/stubs",
+						"/usr/local/cuda-12.6/targets/aarch64-linux/lib",
 						"/usr/lib/gcc/aarch64-linux-gnu/11",
 						"/usr/lib/aarch64-linux-gnu",
 						"/usr/lib",
@@ -26,21 +31,22 @@
 					"linkFrameworkDirectories" : [],
 					"linkLibraries" : 
 					[
-						"gcc",
+						"stdc++",
+						"m",
 						"gcc_s",
-						"c",
 						"gcc",
-						"gcc_s"
+						"c",
+						"gcc_s",
+						"gcc"
 					]
 				},
-				"path" : "/usr/bin/aarch64-linux-gnu-gcc",
-				"version" : "11.4.0"
+				"path" : "/usr/local/cuda-12.6/bin/nvcc",
+				"version" : "12.6.68"
 			},
-			"language" : "C",
+			"language" : "CUDA",
 			"sourceFileExtensions" : 
 			[
-				"c",
-				"m"
+				"cu"
 			]
 		},
 		{
@@ -91,6 +97,7 @@
 				"cc",
 				"cpp",
 				"cxx",
+				"m",
 				"mm",
 				"mpp",
 				"CPP",

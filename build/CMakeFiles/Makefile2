@@ -81,12 +81,12 @@ clean: CMakeFiles/Radar.dir/clean
 CMakeFiles/Radar.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/eric/AscensionRadar2026/build/CMakeFiles --progress-num=1,2 "Built target Radar"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/eric/AscensionRadar2026/build/CMakeFiles --progress-num=1,2,3,4 "Built target Radar"
 .PHONY : CMakeFiles/Radar.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Radar.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/eric/AscensionRadar2026/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/eric/AscensionRadar2026/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Radar.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/eric/AscensionRadar2026/build/CMakeFiles 0
 .PHONY : CMakeFiles/Radar.dir/rule

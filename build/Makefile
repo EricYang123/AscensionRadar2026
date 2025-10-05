@@ -153,6 +153,54 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/Yolo.o: src/Yolo.cpp.o
+.PHONY : src/Yolo.o
+
+# target to build an object file
+src/Yolo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/Yolo.cpp.o
+.PHONY : src/Yolo.cpp.o
+
+src/Yolo.i: src/Yolo.cpp.i
+.PHONY : src/Yolo.i
+
+# target to preprocess a source file
+src/Yolo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/Yolo.cpp.i
+.PHONY : src/Yolo.cpp.i
+
+src/Yolo.s: src/Yolo.cpp.s
+.PHONY : src/Yolo.s
+
+# target to generate assembly for a file
+src/Yolo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/Yolo.cpp.s
+.PHONY : src/Yolo.cpp.s
+
+src/cuda.o: src/cuda.cu.o
+.PHONY : src/cuda.o
+
+# target to build an object file
+src/cuda.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/cuda.cu.o
+.PHONY : src/cuda.cu.o
+
+src/cuda.i: src/cuda.cu.i
+.PHONY : src/cuda.i
+
+# target to preprocess a source file
+src/cuda.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/cuda.cu.i
+.PHONY : src/cuda.cu.i
+
+src/cuda.s: src/cuda.cu.s
+.PHONY : src/cuda.s
+
+# target to generate assembly for a file
+src/cuda.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/cuda.cu.s
+.PHONY : src/cuda.cu.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -165,6 +213,12 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/Yolo.o"
+	@echo "... src/Yolo.i"
+	@echo "... src/Yolo.s"
+	@echo "... src/cuda.o"
+	@echo "... src/cuda.i"
+	@echo "... src/cuda.s"
 .PHONY : help
 
 

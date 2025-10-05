@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Project declaration with C++ and CUDA support
-project(AscensionRadar2026)
+project(AscensionRadar2026 LANGUAGES CXX CUDA)
 
 # Set C++ standard to C++17
 set(CMAKE_CXX_STANDARD 17)
@@ -23,6 +23,8 @@ include_directories(
 # Define source files (including CUDA sources)
 set(SOURCES
     main.cpp
+    src/Yolo.cpp
+    src/cuda.cu
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
