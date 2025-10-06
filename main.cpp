@@ -22,16 +22,19 @@ class Logger : public ILogger
 int main(){
     Logger logger;
     Yolo yolo;
-    yolo.init("yolov11n.engine", logger);
-    cout << "eh" << endl;
+    yolo.init("yolo11n.engine", logger);
     VideoCapture cap(0);
     namedWindow("Webcam", WINDOW_AUTOSIZE);
     Mat frame;
-    while(true){
-        cap >> frame;
-        yolo.preprocess(frame);
-        cout << "preprocess done" << endl;
-    }
+    cap >> frame;
+    yolo.preprocess(frame);
+    yolo.infer();
+    vector<Detection> detected;
+    yolo.postprocess(detected);
+    cout << detected.size() << endl;
+    yolo.display(frame, detected);
+    imshow("Webcam", frame);
+    waitKey(0);
     cap.release();
     cv::destroyAllWindows();
     return 0;
