@@ -1,7 +1,7 @@
 # 2026 Radar
 ## Timeline
 ### Single Camera
-- Create a more easy to read version of last year's CV code
+- ~~Create a more easy to read version of last year's CV code~~
 - Start multi-layer object detection
 	- Create and implement a YOLO model for detecting robots (use pre trained model for detecting cars as substitute)
 	- Create and implement a YOLO model for detecting armour panels
