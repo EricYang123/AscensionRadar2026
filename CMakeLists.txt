@@ -25,6 +25,7 @@ set(SOURCES
     main.cpp
     src/Yolo.cpp
     src/cuda.cu
+    src/layers.cpp
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

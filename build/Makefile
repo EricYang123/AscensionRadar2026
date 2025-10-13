@@ -201,6 +201,30 @@ src/cuda.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/cuda.cu.s
 .PHONY : src/cuda.cu.s
 
+src/layers.o: src/layers.cpp.o
+.PHONY : src/layers.o
+
+# target to build an object file
+src/layers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/layers.cpp.o
+.PHONY : src/layers.cpp.o
+
+src/layers.i: src/layers.cpp.i
+.PHONY : src/layers.i
+
+# target to preprocess a source file
+src/layers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/layers.cpp.i
+.PHONY : src/layers.cpp.i
+
+src/layers.s: src/layers.cpp.s
+.PHONY : src/layers.s
+
+# target to generate assembly for a file
+src/layers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/layers.cpp.s
+.PHONY : src/layers.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -219,6 +243,9 @@ help:
 	@echo "... src/cuda.o"
 	@echo "... src/cuda.i"
 	@echo "... src/cuda.s"
+	@echo "... src/layers.o"
+	@echo "... src/layers.i"
+	@echo "... src/layers.s"
 .PHONY : help
 
 

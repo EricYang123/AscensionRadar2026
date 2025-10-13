@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Radar.dir/src/Yolo.cpp.o.d"
   "CMakeFiles/Radar.dir/src/cuda.cu.o"
   "CMakeFiles/Radar.dir/src/cuda.cu.o.d"
+  "CMakeFiles/Radar.dir/src/layers.cpp.o"
+  "CMakeFiles/Radar.dir/src/layers.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.
