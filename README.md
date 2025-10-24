@@ -1,9 +1,9 @@
 # 2026 Radar
 ## Timeline
-### Single Camera - End of October
+### Single Camera - End of October or November week 1
 - ~~Create a more easy to read version of last year's CV code~~
 - Start multi-layer object detection
-	- Create and implement a YOLO model for detecting robots (use pre trained model for detecting cars as substitute)
+	- ~~Create and implement a YOLO model for detecting robots (use pre trained model for detecting cars as substitute)~~
 	- Create and implement a YOLO model for detecting armour panels
 		- Run it on a cropped image of just the robot (much smaller model)
 	- Create and implement a RESNET model for image classification to determine type of armour panel
