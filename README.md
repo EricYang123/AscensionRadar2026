@@ -4,8 +4,8 @@
 - ~~Create a more easy to read version of last year's CV code~~
 - Start multi-layer object detection
 	- ~~Create and implement a YOLO model for detecting robots (use pre trained model for detecting cars as substitute)~~
-	- Create and implement a YOLO model for detecting armour panels
-		- Run it on a cropped image of just the robot (much smaller model)
+	- ~~Create and implement a YOLO model for detecting armour panels~~
+		- ~~Run it on a cropped image of just the robot (much smaller model)~~
 	- Create and implement a RESNET model for image classification to determine type of armour panel
 		- Run on a cropped image of just the armour plate for better object classification
 	- Make the layers work with each other
