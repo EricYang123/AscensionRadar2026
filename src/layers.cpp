@@ -4,6 +4,10 @@
 #include <opencv2/opencv.hpp>
 
 void Layers::showLargestDetection(Mat image, const vector<Detection>& output, Mat& outputImage){
+    if(output.size() == 0){
+        outputImage = image.clone();
+        return;
+    }
     vector<int> detectionSizes;
     for(int i = 0; i < output.size(); i++){
         auto detection = output[i];
@@ -21,14 +25,19 @@ void Layers::showLargestDetection(Mat image, const vector<Detection>& output, Ma
             box.x = box.x / ratio_w;
             box.y = (box.y - (model_h1 - ratio_w * image.rows) / 2) / ratio_w;
             box.width = box.width / ratio_w;
-            box.height = box.height / ratio_h;
+            box.height = box.height / ratio_w;
         } else{
             box.x = (box.x - (model_w1 - ratio_h * image.cols) / 2) / ratio_h;
             box.y = box.y / ratio_h;
-            box.width = box.width / ratio_w;
+            box.width = box.width / ratio_h;
             box.height = box.height / ratio_h;
         }
-    outputImage = image(box);
-    cout << object.class_id << " " << CLASS_NAMES.at(object.class_id) << endl;
+    if(box.x >= 0 && box.y >= 0){
+        outputImage = image(box).clone();
+        // cout << object.class_id << " " << CLASS_NAMES.at(object.class_id) << endl;
+    }else{
+        outputImage = image.clone();
+    }
 
+    
 }

@@ -62,17 +62,11 @@ void Yolo::infer(){
     const char* output_name = engine->getIOTensorName(1);
 
     int nbBindings = engine->getNbIOTensors();
-    for (int i = 0; i < nbBindings; ++i) {
-        std::cout << "Binding " << i << ": " << engine->getIOTensorName(i) << std::endl;
-    }
 
     context->setTensorAddress(input_name, gpu_buffers[0]);
     context->setOutputTensorAddress(output_name, gpu_buffers[1]);
 
-    cout << "set addresses" << endl;
-
     this->context->enqueueV3(this->stream);
-    cout << "infered" << endl;
 }
 
 void Yolo::postprocess(vector<Detection>& output){
@@ -137,11 +131,11 @@ void Yolo::display(Mat& image, const vector<Detection>& output){
             box.x = box.x / ratio_w;
             box.y = (box.y - (input_h - ratio_w * image.rows) / 2) / ratio_w;
             box.width = box.width / ratio_w;
-            box.height = box.height / ratio_h;
+            box.height = box.height / ratio_w;
         } else{
             box.x = (box.x - (input_w - ratio_h * image.cols) / 2) / ratio_h;
             box.y = box.y / ratio_h;
-            box.width = box.width / ratio_w;
+            box.width = box.width / ratio_h;
             box.height = box.height / ratio_h;
         }
 
