@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/eric/AscensionRadar2026/src/cuda.cu" "CMakeFiles/Radar.dir/src/cuda.cu.o" "gcc" "CMakeFiles/Radar.dir/src/cuda.cu.o.d"
   "/home/eric/AscensionRadar2026/main.cpp" "CMakeFiles/Radar.dir/main.cpp.o" "gcc" "CMakeFiles/Radar.dir/main.cpp.o.d"
+  "/home/eric/AscensionRadar2026/src/Resnet.cpp" "CMakeFiles/Radar.dir/src/Resnet.cpp.o" "gcc" "CMakeFiles/Radar.dir/src/Resnet.cpp.o.d"
   "/home/eric/AscensionRadar2026/src/Yolo.cpp" "CMakeFiles/Radar.dir/src/Yolo.cpp.o" "gcc" "CMakeFiles/Radar.dir/src/Yolo.cpp.o.d"
   "/home/eric/AscensionRadar2026/src/layers.cpp" "CMakeFiles/Radar.dir/src/layers.cpp.o" "gcc" "CMakeFiles/Radar.dir/src/layers.cpp.o.d"
   )

@@ -153,6 +153,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/Resnet.o: src/Resnet.cpp.o
+.PHONY : src/Resnet.o
+
+# target to build an object file
+src/Resnet.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/Resnet.cpp.o
+.PHONY : src/Resnet.cpp.o
+
+src/Resnet.i: src/Resnet.cpp.i
+.PHONY : src/Resnet.i
+
+# target to preprocess a source file
+src/Resnet.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/Resnet.cpp.i
+.PHONY : src/Resnet.cpp.i
+
+src/Resnet.s: src/Resnet.cpp.s
+.PHONY : src/Resnet.s
+
+# target to generate assembly for a file
+src/Resnet.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Radar.dir/build.make CMakeFiles/Radar.dir/src/Resnet.cpp.s
+.PHONY : src/Resnet.cpp.s
+
 src/Yolo.o: src/Yolo.cpp.o
 .PHONY : src/Yolo.o
 
@@ -237,6 +261,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/Resnet.o"
+	@echo "... src/Resnet.i"
+	@echo "... src/Resnet.s"
 	@echo "... src/Yolo.o"
 	@echo "... src/Yolo.i"
 	@echo "... src/Yolo.s"

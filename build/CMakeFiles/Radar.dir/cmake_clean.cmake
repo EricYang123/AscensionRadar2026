@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "../Radar.pdb"
   "CMakeFiles/Radar.dir/main.cpp.o"
   "CMakeFiles/Radar.dir/main.cpp.o.d"
+  "CMakeFiles/Radar.dir/src/Resnet.cpp.o"
+  "CMakeFiles/Radar.dir/src/Resnet.cpp.o.d"
   "CMakeFiles/Radar.dir/src/Yolo.cpp.o"
   "CMakeFiles/Radar.dir/src/Yolo.cpp.o.d"
   "CMakeFiles/Radar.dir/src/cuda.cu.o"
