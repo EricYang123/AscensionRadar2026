@@ -31,9 +31,9 @@ int main(){
     Resnet resnet;
     Layers layers;
 
-    yolo.init("yolo11n.engine", logger);
-    yolo2.init("yolov12n.engine", logger2);
-    resnet.init("resnet18.engine", logger3);
+    yolo.init("models/yolo11n.engine", logger);
+    yolo2.init("models/yolov12n.engine", logger2);
+    resnet.init("models/resnet18.engine", logger3);
     
     VideoCapture cap(0);
     namedWindow("Webcam", WINDOW_AUTOSIZE);
