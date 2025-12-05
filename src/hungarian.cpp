@@ -13,6 +13,7 @@ void Hungarian::hungarian(Mat& matrix){
     step1(matrix);
     step2(matrix);
     step3(matrix);
+    step4(matrix);
 }
 
 void Hungarian::step1(Mat& matrix){
@@ -57,9 +58,6 @@ void Hungarian::step3(Mat& matrix){
 }
 
 void Hungarian::step4(Mat& matrix){
-    for(int c = 0; c < starred.size(); c++){
-        coveredCol.at(starred.at(c).x) = true;
-    }
     bool allCovered = false;
     while(!allCovered){
         allCovered = true;
@@ -80,12 +78,21 @@ void Hungarian::step4(Mat& matrix){
                     }
 
                     if(starredIdx != -1){
-
+                        coveredCol.at(starred.at(starredIdx).x) = false;
+                        coveredRow.at(i) = true;
                     }else{
-
-
-
-
+                        starredIt = find_if(starred.begin(), starred.end(), [j](const Point& p){return p.x == j;});
+                        starredIdx = distance(starred.begin(), starredIt);
+                        int rowWithStar = starred.at(starredIdx).y;
+                        auto primedIt = find_if(primed.begin(), primed.end(), [rowWithStar](const Point& p){return p.y == rowWithStar;});
+                        int primedIdx = distance(primed.begin(), primedIt);
+                        Point firstStar(j, i);
+                        Point lastStar(primed.at(primedIdx).x, primed.at(primedIdx).y);
+                        starred.erase(starred.begin() + starredIdx);
+                        primed.pop_back();
+                        primed.erase(primed.begin() + primedIdx);
+                        starred.push_back(firstStar);
+                        starred.push_back(lastStar);
                         fill(coveredCol.begin(), coveredCol.end(), false);
                         fill(coveredRow.begin(), coveredRow.end(), false);
                         for(int c = 0; c < starred.size(); c++){
@@ -96,7 +103,14 @@ void Hungarian::step4(Mat& matrix){
             }
         }
     }
-
+    cout << "Covered Cols" << endl;
+    for(int i = 0; i < coveredCol.size(); i++){
+        cout << coveredCol.at(i) << endl;
+    }
+    cout << "Covered Rows" << endl;
+    for(int i = 0; i < coveredRow.size(); i++){
+        cout << coveredRow.at(i) << endl;
+    }
 }
 
 void Hungarian::step5(Mat& matrix){
