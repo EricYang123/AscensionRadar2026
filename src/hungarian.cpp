@@ -16,6 +16,11 @@ void Hungarian::hungarian(Mat& matrix){
     step4(matrix);
     step5(matrix);
     cout << "Starred Spaces:\n" << starred << endl;
+    int cost = 0;
+    for(int i = 0; i < starred.size(); i++){
+        cost += initialMatrix.at<int>(starred.at(i).y, starred.at(i).x);
+    }
+    cout << "Cost: " << cost << endl;
 }
 
 void Hungarian::step1(Mat& matrix){
