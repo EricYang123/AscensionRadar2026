@@ -14,6 +14,8 @@ void Hungarian::hungarian(Mat& matrix){
     step2(matrix);
     step3(matrix);
     step4(matrix);
+    step5(matrix);
+    cout << "Starred Spaces:\n" << starred << endl;
 }
 
 void Hungarian::step1(Mat& matrix){
@@ -54,7 +56,6 @@ void Hungarian::step3(Mat& matrix){
             }
         }
     }
-    cout << starred << endl;
 }
 
 void Hungarian::step4(Mat& matrix){
@@ -76,23 +77,45 @@ void Hungarian::step4(Mat& matrix){
                     }else{
                         starredIdx = -1;
                     }
-
                     if(starredIdx != -1){
                         coveredCol.at(starred.at(starredIdx).x) = false;
                         coveredRow.at(i) = true;
                     }else{
-                        starredIt = find_if(starred.begin(), starred.end(), [j](const Point& p){return p.x == j;});
-                        starredIdx = distance(starred.begin(), starredIt);
-                        int rowWithStar = starred.at(starredIdx).y;
-                        auto primedIt = find_if(primed.begin(), primed.end(), [rowWithStar](const Point& p){return p.y == rowWithStar;});
-                        int primedIdx = distance(primed.begin(), primedIt);
-                        Point firstStar(j, i);
-                        Point lastStar(primed.at(primedIdx).x, primed.at(primedIdx).y);
-                        starred.erase(starred.begin() + starredIdx);
-                        primed.pop_back();
-                        primed.erase(primed.begin() + primedIdx);
-                        starred.push_back(firstStar);
-                        starred.push_back(lastStar);
+                        vector<Point> path;
+                        path.push_back(Point(j, i));
+                        int latestPrimeCol = j;
+                        int latestStarRow;
+                        vector<Point> prime2swap;
+                        prime2swap.push_back(Point(j, i));
+                        vector<Point> star2swap;
+                        while(true){
+                            //substep 1
+                            starredIt = find_if(starred.begin(), starred.end(), [latestPrimeCol](const Point& p){return p.x == latestPrimeCol;});
+                            starredIdx = distance(starred.begin(), starredIt);
+                            if(starredIdx < starred.size()){
+                                latestStarRow = starred.at(starredIdx).y;
+                                star2swap.push_back(starred.at(starredIdx));
+                            }else{
+                                break;
+                            }
+
+                            //substep 2
+                            auto primedIt = find_if(primed.begin(), primed.end(), [latestStarRow](const Point& p){return p.y == latestStarRow;});
+                            int primedIdx = distance(primed.begin(), primedIt);
+                            latestPrimeCol = primed.at(primedIdx).x;
+                            prime2swap.push_back(primed.at(primedIdx));                   
+
+                        }
+                        for(Point point2swap : prime2swap){
+                            auto it = find(primed.begin(), primed.end(), point2swap);
+                            starred.push_back(*it);
+                            primed.erase(it);
+                        }
+                        for(Point point2swap : star2swap){
+                            auto it = find(starred.begin(), starred.end(), point2swap);
+                            primed.push_back(*it);
+                            starred.erase(it);
+                        }
                         fill(coveredCol.begin(), coveredCol.end(), false);
                         fill(coveredRow.begin(), coveredRow.end(), false);
                         for(int c = 0; c < starred.size(); c++){
@@ -103,16 +126,32 @@ void Hungarian::step4(Mat& matrix){
             }
         }
     }
-    cout << "Covered Cols" << endl;
-    for(int i = 0; i < coveredCol.size(); i++){
-        cout << coveredCol.at(i) << endl;
-    }
-    cout << "Covered Rows" << endl;
-    for(int i = 0; i < coveredRow.size(); i++){
-        cout << coveredRow.at(i) << endl;
-    }
 }
 
 void Hungarian::step5(Mat& matrix){
-    
+    while(starred.size() < min(matrix.rows, matrix.cols)){
+        int minUncovered = INT_MAX;\
+        for(int i = 0; i < matrix.rows; i++){
+            for(int j = 0; j < matrix.cols; j++){
+                if(minUncovered > matrix.at<int>(i, j) && !coveredCol.at(j) && !coveredRow.at(i)){
+                    minUncovered = matrix.at<int>(i, j);
+                }
+            }
+        }
+        for(int i = 0; i < matrix.rows; i++){
+            for(int j = 0; j < matrix.cols; j++){
+                if(coveredCol.at(j) && coveredRow.at(i)){
+                    matrix.at<int>(i, j) += minUncovered;
+                }else if(!coveredCol.at(j) && !coveredRow.at(i)){
+                    matrix.at<int>(i, j) -= minUncovered;
+                }
+            }
+        }
+        fill(coveredCol.begin(), coveredCol.end(), false);
+        fill(coveredRow.begin(), coveredRow.end(), false);
+        for(int s = 0; s < starred.size(); s++){
+            coveredCol.at(starred.at(s).x) = true;
+        }
+        step4(matrix);
+    }
 }
