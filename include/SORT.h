@@ -6,10 +6,14 @@ using namespace cv;
 
 class SORT{
 public:
+    void sort(vector<Detection>& detections);
+
     int calculateDistance(Rect point1, Rect point2);
     
-    void getDistanceMatrix(Mat& distances, vector<Detection> detection);
+    Mat getDistanceMatrix(vector<Detection> detection);
 
 private:
     vector<Rect> predictions;
+
+    Mat distanceMatrix;
 };
