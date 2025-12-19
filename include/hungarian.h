@@ -5,7 +5,7 @@ using namespace cv;
 
 class Hungarian{
     public:
-        void hungarian(Mat& matrix);
+        vector<Point> hungarian(Mat& matrix);
         void step1(Mat& matrix);
         void step2(Mat& matrix);
         void step3(Mat& matrix);

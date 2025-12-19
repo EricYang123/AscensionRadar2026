@@ -3,6 +3,7 @@
 #include "Resnet.h"
 #include "NvInfer.h"
 #include "NvOnnxParser.h"
+#include "SORT.h"
 #include <opencv2/opencv.hpp>
 #include <fstream>
 #include <memory>
@@ -24,19 +25,20 @@ class Logger : public ILogger
 
 int main(){
     Logger logger;
-    Logger logger2;
-    Logger logger3;
+    // Logger logger2;
+    // Logger logger3;
     Yolo yolo;
-    Yolo yolo2;
-    Resnet resnet;
-    Layers layers;
+    // Yolo yolo2;
+    // Resnet resnet;
+    // Layers layers;
+    SORT sort;
 
-    yolo.init("models/yolo11n.engine", logger);
-    yolo2.init("models/yolov12n.engine", logger2);
-    resnet.init("models/resnet18.engine", logger3);
+    yolo.init("/root/workspace/yolo11n.engine", logger);
+    // yolo2.init("models/yolov12n.engine", logger2);
+    // resnet.init("models/resnet18.engine", logger3);
     
-    VideoCapture cap(0);
-    namedWindow("Webcam", WINDOW_AUTOSIZE);
+    VideoCapture cap(2);
+    namedWindow("webcam", WINDOW_NORMAL);
     // namedWindow("Cropped Image", WINDOW_AUTOSIZE);
 
     Mat frame;
@@ -44,30 +46,32 @@ int main(){
     while(true){
         cap >> frame;
 
-        // yolo.preprocess(frame);
+        yolo.preprocess(frame);
 
-        // yolo.infer();
+        yolo.infer();
 
-        // vector<Detection> detected;
-        // yolo.postprocess(detected);
-        // yolo.display(frame, detected);
+        vector<Detection> detected;
+        yolo.postprocess(detected);
+        sort.sort(detected);
+        // cout << "detection vector size: " << detected.size() << endl;
+        yolo.display(frame, detected);
         // layers.showLargestDetection(frame, detected, cropped);
-
-        imshow("Webcam", frame);
+        
+        imshow("webcam", frame);
 
         // yolo2.preprocess(cropped);
-        resnet.preprocess(frame);
+        // resnet.preprocess(frame);
 
         // yolo2.infer();
-        resnet.infer();
+        // resnet.infer();
 
         // vector<Detection> detected2;
         // yolo2.postprocess(detected2);
-        resnet.postprocess();
+        // resnet.postprocess();
         // yolo.display(cropped, detected2);
 
         // imshow("Cropped Image", cropped);
-        if(waitKey(10) == 'q'){
+        if(waitKey(10) != -1){
             break;
         }
     }

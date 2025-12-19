@@ -141,7 +141,8 @@ void Yolo::display(Mat& image, const vector<Detection>& output){
 
         rectangle(image, Point(box.x, box.y), Point(box.x + box.width, box.y + box.height), colour, 3);
 
-        string class_string = CLASS_NAMES[class_id] + ' '+ to_string(conf).substr(0, 4);
+        // string class_string = CLASS_NAMES[class_id] + ' '+ to_string(conf).substr(0, 4);
+        string class_string = CLASS_NAMES[class_id] + ' '+ to_string(i);
         Size text_size = getTextSize(class_string, FONT_HERSHEY_DUPLEX, 1, 2, 0);
         Rect text_rect(box.x, box.y - 40, text_size.width + 10, text_size.height + 20);
         rectangle(image, text_rect, colour, FILLED);

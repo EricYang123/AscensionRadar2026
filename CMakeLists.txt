@@ -27,6 +27,8 @@ set(SOURCES
     src/cuda.cu
     src/layers.cpp
     src/Resnet.cpp
+    src/SORT.cpp
+    src/hungarian.cpp
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

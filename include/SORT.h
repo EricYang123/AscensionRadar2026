@@ -13,7 +13,6 @@ public:
     Mat getDistanceMatrix(vector<Detection> detection);
 
 private:
-    vector<Rect> predictions;
+    vector<Detection> predictions;
 
-    Mat distanceMatrix;
 };
