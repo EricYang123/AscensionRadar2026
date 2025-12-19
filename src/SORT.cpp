@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 #include "SORT.h"
 #include "hungarian.h"
@@ -9,28 +10,46 @@ using namespace cv;
 
 
 void SORT::sort(vector<Detection>& detections){
+    cout << "Detections Before:\n";
+    for(int i = 0; i < detections.size(); i++){
+        cout << detections.at(i).bbox << endl;
+    }
     Hungarian hung;
     Mat distanceMatrix;
     if(predictions.empty()){
+        cout << "Predictions Empty" << endl;
         predictions = detections;
         return;
     }
-    getDistanceMatrix(detections);
+    distanceMatrix = getDistanceMatrix(detections);
+    // cout << "Distance Matrix: \n" << distanceMatrix << endl;
     if(distanceMatrix.empty()){
         return;
     }
-    // cout << distanceMatrix << endl;
     vector<Point> starred = hung.hungarian(distanceMatrix);
-    predictions = detections;
-    // cout << "Starred Spaces:\n" << starred << endl;
-    vector<Detection> temp(starred.size());
-    cout << "Before temp" << endl;
-    cout << "Sizes of vectors " << detections.size() << " " << predictions.size() << " " << starred.size() << endl;
-    cout << starred << endl;
+    // cout << "Detections Size: " << detections.size() << endl;
+    cout << "Starred Values: \n" << starred << endl;
+    
+    vector<Detection> temp(detections.size());
     for(int i = 0; i < starred.size(); i++){
+        if(starred.at(i).y >= detections.size() || starred.at(i).x >= detections.size()){
+            continue;
+        }
         temp.at(starred.at(i).y) = detections.at(starred.at(i).x);
     }
-    cout << "After temp" << endl;
+    for(int i = 0; i < detections.size(); i++){
+        bool indexAdded = any_of(starred.begin(), starred.end(), [i](const cv::Point& point){ return point.x == i;});
+        if(!indexAdded){
+            temp.push_back(detections.at(i));
+        }
+    }
+
+    detections = temp;
+    cout << "Detections After:\n";
+    for(int i = 0; i < detections.size(); i++){
+        cout << detections.at(i).bbox << endl;
+    }
+    predictions = detections;
 }
 
 int SORT::calculateDistance(Rect point1, Rect point2){

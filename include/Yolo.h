@@ -27,7 +27,7 @@ public:
 
 private:
 
-    float conf_threshold = 0.3f;
+    float conf_threshold = 0.5f;
 
     float nms_threshold = 0.4f;
 
