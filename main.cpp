@@ -38,7 +38,7 @@ int main(){
     // resnet.init("models/resnet18.engine", logger3);
     
     VideoCapture cap(0);
-    // namedWindow("webcam", WINDOW_NORMAL);
+    namedWindow("webcam", WINDOW_NORMAL);
     // namedWindow("Cropped Image", WINDOW_AUTOSIZE);
 
     Mat frame;
@@ -58,6 +58,7 @@ int main(){
         sort.sort(detected);
         auto timeNow = std::chrono::high_resolution_clock::now();
         // cout << "detection vector size: " << detected.size() << endl;
+
         yolo.display(frame, detected);
         // layers.showLargestDetection(frame, detected, cropped);
         

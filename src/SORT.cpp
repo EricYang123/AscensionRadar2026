@@ -10,37 +10,23 @@ using namespace cv;
 
 
 void SORT::sort(vector<Detection>& detections){
-    // cout << "Detections Before:\n";
-    // for(int i = 0; i < detections.size(); i++){
-    //     cout << detections.at(i).bbox << endl;
-    // }
     Hungarian hung;
     Mat distanceMatrix;
     if(predictions.empty()){
-        // cout << "Predictions Empty" << endl;
         predictions = detections;
+        for(int i = 0; i < predictions.size(); i++){
+            predictions.at(i).object_id = i;
+        }
         return;
     }
     distanceMatrix = getDistanceMatrix(detections);
-    // cout << "Distance Matrix: \n" << distanceMatrix << endl;
     if(distanceMatrix.empty()){
         reID(detections);
-        cout << lostIds.size() << endl;
         return;
     }
-    // cout << distanceMatrix << endl;
     vector<Point> starred = hung.hungarian(distanceMatrix);
-    // cout << "Detections Size: " << detections.size() << endl;
-    // cout << "Starred Values: \n" << starred << endl;
     assignId(detections, starred);
-
-    // cout << "Detections After:\n";
-    // for(int i = 0; i < detections.size(); i++){
-    //     cout << detections.at(i).bbox << endl;
-    // }
     reID(detections);
-    cout << lostIds.size() << endl;
-    // predictions = detections;
 }
 
 int SORT::calculateDistance(Rect point1, Rect point2){
@@ -64,9 +50,6 @@ Mat SORT::getDistanceMatrix(vector<Detection> detections){
 
 void SORT::assignId(vector<Detection>& detections, vector<Point> starred){
     for(int i = 0; i < starred.size(); i++){
-        if(starred.at(i).y >= detections.size() || starred.at(i).x >= detections.size()){
-            continue;
-        }
         detections.at(starred.at(i).x).object_id = predictions.at(starred.at(i).y).object_id;
     }
     for(int i = 0; i < detections.size(); i++){
