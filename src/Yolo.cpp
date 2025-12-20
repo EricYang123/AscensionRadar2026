@@ -86,7 +86,7 @@ void Yolo::postprocess(vector<Detection>& output){
         double score;
         minMaxLoc(classes_scores, nullptr, &score, nullptr, &class_id_point);
 
-        if(score > conf_threshold && class_id_point.y == 41){
+        if(score > conf_threshold){
             const float cx = det_output.at<float>(0, i);
             const float cy = det_output.at<float>(1, i);
             const float ow = det_output.at<float>(2, i);
@@ -125,6 +125,7 @@ void Yolo::display(Mat& image, const vector<Detection>& output){
         auto box = detection.bbox;
         auto class_id = detection.class_id;
         auto conf = detection.conf;
+        auto object_id = detection.object_id;
         Scalar colour = Scalar(COLOURS[class_id][0], COLOURS[class_id][1], COLOURS[class_id][2]);
 
         if(ratio_h > ratio_w){
@@ -142,7 +143,7 @@ void Yolo::display(Mat& image, const vector<Detection>& output){
         rectangle(image, Point(box.x, box.y), Point(box.x + box.width, box.y + box.height), colour, 3);
 
         // string class_string = CLASS_NAMES[class_id] + ' '+ to_string(conf).substr(0, 4);
-        string class_string = CLASS_NAMES[class_id] + ' '+ to_string(i);
+        string class_string = CLASS_NAMES[class_id] + ' '+ to_string(object_id);
         Size text_size = getTextSize(class_string, FONT_HERSHEY_DUPLEX, 1, 2, 0);
         Rect text_rect(box.x, box.y - 40, text_size.width + 10, text_size.height + 20);
         rectangle(image, text_rect, colour, FILLED);

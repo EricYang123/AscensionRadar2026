@@ -6,6 +6,7 @@ struct Detection{
     float conf; 
     int class_id; 
     Rect bbox;
+    int object_id = -1;
 };
 
 const std::vector<std::string> CLASS_NAMES = {

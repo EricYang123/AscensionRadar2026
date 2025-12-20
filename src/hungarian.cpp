@@ -7,6 +7,7 @@ using namespace std;
 using namespace cv;
 
 vector<Point> Hungarian::hungarian(Mat& matrix){
+    
     Mat initialMatrix = matrix.clone();
     coveredCol.assign(matrix.cols, false);
     coveredRow.assign(matrix.rows, false);
@@ -20,6 +21,7 @@ vector<Point> Hungarian::hungarian(Mat& matrix){
     //     cost += initialMatrix.at<int>(starred.at(i).y, starred.at(i).x);
     // }
     // cout << "Cost: " << cost << endl;
+
     return starred;
 }
 
@@ -67,6 +69,7 @@ void Hungarian::step4(Mat& matrix){
     bool allCovered = false;
     while(!allCovered){
         allCovered = true;
+        bool gotoStart = false;
         for(int j = 0; j < matrix.cols; j++){
             if(coveredCol.at(j)){
                 continue;
@@ -85,6 +88,7 @@ void Hungarian::step4(Mat& matrix){
                     if(starredIdx != -1){
                         coveredCol.at(starred.at(starredIdx).x) = false;
                         coveredRow.at(i) = true;
+                        gotoStart = true;
                     }else{
                         vector<Point> path;
                         path.push_back(Point(j, i));
@@ -103,13 +107,11 @@ void Hungarian::step4(Mat& matrix){
                             }else{
                                 break;
                             }
-
                             //substep 2
                             auto primedIt = find_if(primed.begin(), primed.end(), [latestStarRow](const Point& p){return p.y == latestStarRow;});
                             int primedIdx = distance(primed.begin(), primedIt);
                             latestPrimeCol = primed.at(primedIdx).x;
                             prime2swap.push_back(primed.at(primedIdx));                   
-
                         }
                         for(Point point2swap : prime2swap){
                             auto it = find(primed.begin(), primed.end(), point2swap);
@@ -123,11 +125,19 @@ void Hungarian::step4(Mat& matrix){
                         }
                         fill(coveredCol.begin(), coveredCol.end(), false);
                         fill(coveredRow.begin(), coveredRow.end(), false);
+                        primed.clear();
                         for(int c = 0; c < starred.size(); c++){
                             coveredCol.at(starred.at(c).x) = true;
                         }
+                        gotoStart = true;
                     }
                 }
+                if(gotoStart){
+                    break;
+                }
+            }
+            if(gotoStart){
+                break;
             }
         }
     }

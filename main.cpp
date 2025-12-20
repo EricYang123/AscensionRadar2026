@@ -38,11 +38,13 @@ int main(){
     // resnet.init("models/resnet18.engine", logger3);
     
     VideoCapture cap(0);
-    namedWindow("webcam", WINDOW_NORMAL);
+    // namedWindow("webcam", WINDOW_NORMAL);
     // namedWindow("Cropped Image", WINDOW_AUTOSIZE);
 
     Mat frame;
     Mat cropped;
+    
+    int frames = 0;
     while(true){
         cap >> frame;
 
@@ -52,7 +54,9 @@ int main(){
 
         vector<Detection> detected;
         yolo.postprocess(detected);
+        auto start = std::chrono::high_resolution_clock::now();
         sort.sort(detected);
+        auto timeNow = std::chrono::high_resolution_clock::now();
         // cout << "detection vector size: " << detected.size() << endl;
         yolo.display(frame, detected);
         // layers.showLargestDetection(frame, detected, cropped);
@@ -71,7 +75,11 @@ int main(){
         // yolo.display(cropped, detected2);
 
         // imshow("Cropped Image", cropped);
-        if(waitKey(10) != -1){
+        
+        frames++;
+        double elapsed_time = std::chrono::duration<double, std::micro>(timeNow - start).count();
+        // cout << "Time in microseconds: " << elapsed_time << endl;
+        if(waitKey(1) != -1){
             break;
         }
     }

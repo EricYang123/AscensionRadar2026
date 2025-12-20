@@ -29,7 +29,7 @@ private:
 
     float conf_threshold = 0.5f;
 
-    float nms_threshold = 0.4f;
+    float nms_threshold = 0.8f;
 
     const int MAX_IMAGE_SIZE = 4096 * 4096;
 
