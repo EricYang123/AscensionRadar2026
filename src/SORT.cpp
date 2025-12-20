@@ -16,6 +16,10 @@ void SORT::sort(vector<Detection>& detections){
         predictions = detections;
         for(int i = 0; i < predictions.size(); i++){
             predictions.at(i).object_id = i;
+            kals kal;
+            kal.object_id = i;
+            initKalman(kal.kf, Point(predictions.at(i).bbox.x, predictions.at(i).bbox.y));
+            kalmans.push_back(kal);
         }
         return;
     }
@@ -73,7 +77,8 @@ void SORT::reID(vector<Detection> detections){
         auto detectIt = find_if(detections.begin(), detections.end(), [predictObjectId](const Detection& det){return det.object_id == predictObjectId;});
         int detectIdx = distance(detections.begin(), detectIt);
         if(detectIdx < detections.size()){
-            predictions.at(i).bbox = detections.at(detectIdx).bbox;
+            // predictions.at(i).bbox = detections.at(detectIdx).bbox;
+            updatePredictions(detections.at(detectIdx), i);
         }else{
             auto lostIt = find_if(lostIds.begin(), lostIds.end(), [predictObjectId](const lostId& l){return l.object_id == predictObjectId;});
             int lostIdx = distance(lostIds.begin(), lostIt);
@@ -81,15 +86,17 @@ void SORT::reID(vector<Detection> detections){
                 if(lostIds.at(lostIdx).lostFrames >= lostFramesThresh){
                     predictions.erase(predictions.begin() + i);
                     lostIds.erase(lostIds.begin() + lostIdx);
+                    removeKalId(predictObjectId);
                 }else{
                     lostIds.at(lostIdx).lostFrames++;
-
+                    updatePredictions(i);
                 }
             }else{
                 lostId lost;
                 lost.object_id = predictions.at(i).object_id;
                 lost.lostFrames = 1;
                 lostIds.push_back(lost);
+                updatePredictions(i);
             }
         }
     }
@@ -99,6 +106,61 @@ void SORT::reID(vector<Detection> detections){
         int predictIdx = distance(predictions.begin(), predictIt);
         if(predictIdx >= predictions.size()){
             predictions.push_back(detections.at(i));
+            kals kal;
+            kal.object_id = detections.at(i).object_id;
+            initKalman(kal.kf, Point(detections.at(i).bbox.x, detections.at(i).bbox.y));
+            kalmans.push_back(kal);
         }
     }
+}
+
+void SORT::initKalman(KalmanFilter& kf, Point initialPoint){
+    kf.init(4, 2, 0);
+    kf.transitionMatrix = (Mat_<float>(4,4) << 
+                            1, 0, 1, 0,
+                            0, 1, 0, 1,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1);
+    kf.measurementMatrix = (Mat_<float>(2, 4) <<
+                            1, 0, 0, 0,
+                            0, 1, 0, 0);
+
+    setIdentity(kf.processNoiseCov, Scalar::all(1e-5));
+    setIdentity(kf.measurementNoiseCov, Scalar::all(1e-1));
+    setIdentity(kf.errorCovPost, Scalar::all(1));
+
+    kf.statePost.at<float>(0) = initialPoint.x;
+    kf.statePost.at<float>(1) = initialPoint.y;
+    kf.statePost.at<float>(2) = 0;
+    kf.statePost.at<float>(3) = 0;
+
+    kf.predict();
+}
+
+void SORT::updatePredictions(Detection detect, int predictionsIdx){
+    int object_id = detect.object_id;
+    auto kalIt = find_if(kalmans.begin(), kalmans.end(), [object_id](const kals& kal){return kal.object_id == object_id;});
+    int kalIdx = distance(kalmans.begin(), kalIt);
+    Mat meas = (Mat_<float>(2, 1) << detect.bbox.x, detect.bbox.y);
+    kalmans.at(kalIdx).kf.correct(meas);
+    Mat pred = kalmans.at(kalIdx).kf.predict();
+    Point nextPred = Point(static_cast<int>(pred.at<float>(0)), static_cast<int>(pred.at<float>(1)));
+    predictions.at(predictionsIdx).bbox.x = nextPred.x;
+    predictions.at(predictionsIdx).bbox.y = nextPred.y;
+}
+
+void SORT::updatePredictions(int predictionsIdx){
+    int object_id = predictions.at(predictionsIdx).object_id;
+    auto kalIt = find_if(kalmans.begin(), kalmans.end(), [object_id](const kals& kal){return kal.object_id == object_id;});
+    int kalIdx = distance(kalmans.begin(), kalIt);
+    Mat pred = kalmans.at(kalIdx).kf.predict();
+    Point nextPred = Point(static_cast<int>(pred.at<float>(0)), static_cast<int>(pred.at<float>(1)));
+    predictions.at(predictionsIdx).bbox.x = nextPred.x;
+    predictions.at(predictionsIdx).bbox.y = nextPred.y;
+}
+
+void SORT::removeKalId(int object_id){
+    auto kalIt = find_if(kalmans.begin(), kalmans.end(), [object_id](const kals& kal){return kal.object_id == object_id;});
+    int kalIdx = distance(kalmans.begin(), kalIt);
+    kalmans.erase(kalmans.begin() + kalIdx);
 }

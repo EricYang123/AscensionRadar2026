@@ -37,8 +37,8 @@ int main(){
     // yolo2.init("models/yolov12n.engine", logger2);
     // resnet.init("models/resnet18.engine", logger3);
     
-    VideoCapture cap(0);
-    namedWindow("webcam", WINDOW_NORMAL);
+    VideoCapture cap(2);
+    // namedWindow("webcam", WINDOW_NORMAL);
     // namedWindow("Cropped Image", WINDOW_AUTOSIZE);
 
     Mat frame;
