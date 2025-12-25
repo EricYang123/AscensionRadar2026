@@ -31,7 +31,7 @@ set(SOURCES
     src/hungarian.cpp
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 add_executable(Radar ${SOURCES})
 
 # Specify include directories (modern CMake approach)

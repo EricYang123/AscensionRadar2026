@@ -18,12 +18,13 @@ void SORT::sort(vector<Detection>& detections){
             predictions.at(i).object_id = i;
             kals kal;
             kal.object_id = i;
-            initKalman(kal.kf, Point(predictions.at(i).bbox.x, predictions.at(i).bbox.y));
+            initKalman(kal.kf, predictions.at(i).bbox);
             kalmans.push_back(kal);
         }
         return;
     }
-    distanceMatrix = getDistanceMatrix(detections);
+    // distanceMatrix = getDistanceMatrix(detections);
+    distanceMatrix = getIOUmatrix(detections);
     if(distanceMatrix.empty()){
         reID(detections);
         return;
@@ -33,24 +34,29 @@ void SORT::sort(vector<Detection>& detections){
     reID(detections);
 }
 
-int SORT::calculateDistance(Rect point1, Rect point2){
-    int distance = 0;
-    distance = sqrt((point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y));
-    return distance;
+int SORT::calculateIOU(Rect box1, Rect box2){
+    float horizontalOverlap = abs(box1.x - box2.x) - (box1.width / 2) - (box2.width / 2);
+    float verticalOverlap = abs(box1.y - box2.y) - (box1.height / 2) - (box2.height / 2); 
+    float intersectArea = horizontalOverlap * verticalOverlap;
+    float unionArea = (box1.height * box1.width) + (box2.width * box2.height) - intersectArea;
+    float iou = intersectArea / unionArea;
+    float bigIou = iou * 10000;
+    int bigIouInt = static_cast<int>(bigIou);
+    return bigIouInt;
 }
 
-Mat SORT::getDistanceMatrix(vector<Detection> detections){
-    Mat distMat(predictions.size(), detections.size(), CV_32SC1);
+Mat SORT::getIOUmatrix(vector<Detection> detections){
+    Mat iouMat(predictions.size(), detections.size(), CV_32SC1);
     if(predictions.size() == 0 || detections.size() == 0){
-        return distMat;
+        return iouMat;
     }
     for(int i = 0; i < predictions.size(); i++){
         for(int j = 0; j < detections.size(); j++){
-            distMat.at<int>(i, j) = calculateDistance(predictions.at(i).bbox, detections.at(j).bbox);
+            iouMat.at<int>(i, j) = calculateIOU(predictions.at(i).bbox, detections.at(j).bbox);
         }
     }
-    return distMat;
-} 
+    return iouMat;
+}
 
 void SORT::assignId(vector<Detection>& detections, vector<Point> starred){
     for(int i = 0; i < starred.size(); i++){
@@ -108,31 +114,44 @@ void SORT::reID(vector<Detection> detections){
             predictions.push_back(detections.at(i));
             kals kal;
             kal.object_id = detections.at(i).object_id;
-            initKalman(kal.kf, Point(detections.at(i).bbox.x, detections.at(i).bbox.y));
+            initKalman(kal.kf, detections.at(i).bbox);
             kalmans.push_back(kal);
         }
     }
 }
 
-void SORT::initKalman(KalmanFilter& kf, Point initialPoint){
-    kf.init(4, 2, 0);
-    kf.transitionMatrix = (Mat_<float>(4,4) << 
-                            1, 0, 1, 0,
-                            0, 1, 0, 1,
-                            0, 0, 1, 0,
-                            0, 0, 0, 1);
-    kf.measurementMatrix = (Mat_<float>(2, 4) <<
-                            1, 0, 0, 0,
-                            0, 1, 0, 0);
+void SORT::initKalman(KalmanFilter& kf, Rect initialDetection){
+    kf.init(7, 4, 0);
+    kf.transitionMatrix = (Mat_<float>(7,7) << 
+                            1, 0, 0, 0, 1, 0, 0,
+                            0, 1, 0, 0, 0, 1, 0,
+                            0, 0, 1, 0, 0, 0, 1,
+                            0, 0, 0, 1, 0, 0, 0,
+                            0, 0, 0, 0, 1, 0, 0,
+                            0, 0, 0, 0, 0, 1, 0,
+                            0, 0, 0, 0, 0, 0, 1
+                            );
+    kf.measurementMatrix = (Mat_<float>(4, 7) <<
+                            1, 0, 0, 0, 0, 0, 0,
+                            0, 1, 0, 0, 0, 0, 0,
+                            0, 0, 1, 0, 0, 0, 0,
+                            0, 0, 0, 1, 0, 0, 0
+                            );
 
     setIdentity(kf.processNoiseCov, Scalar::all(1e-5));
     setIdentity(kf.measurementNoiseCov, Scalar::all(1e-1));
     setIdentity(kf.errorCovPost, Scalar::all(1));
 
-    kf.statePost.at<float>(0) = initialPoint.x;
-    kf.statePost.at<float>(1) = initialPoint.y;
-    kf.statePost.at<float>(2) = 0;
-    kf.statePost.at<float>(3) = 0;
+    float area = initialDetection.width * initialDetection.height;
+    float ratio = initialDetection.height / initialDetection.width;
+
+    kf.statePost.at<float>(0) = initialDetection.x;
+    kf.statePost.at<float>(1) = initialDetection.y;
+    kf.statePost.at<float>(2) = area;
+    kf.statePost.at<float>(3) = ratio;
+    kf.statePost.at<float>(4) = 0;
+    kf.statePost.at<float>(5) = 0;
+    kf.statePost.at<float>(6) = 0;
 
     kf.predict();
 }
@@ -141,12 +160,23 @@ void SORT::updatePredictions(Detection detect, int predictionsIdx){
     int object_id = detect.object_id;
     auto kalIt = find_if(kalmans.begin(), kalmans.end(), [object_id](const kals& kal){return kal.object_id == object_id;});
     int kalIdx = distance(kalmans.begin(), kalIt);
-    Mat meas = (Mat_<float>(2, 1) << detect.bbox.x, detect.bbox.y);
+    float detectArea = detect.bbox.width * detect.bbox.height;
+    float detectRatio = detect.bbox.height / detect.bbox.width;
+    Mat meas = (Mat_<float>(4, 1) << detect.bbox.x, detect.bbox.y, detectArea, detectRatio);
     kalmans.at(kalIdx).kf.correct(meas);
     Mat pred = kalmans.at(kalIdx).kf.predict();
-    Point nextPred = Point(static_cast<int>(pred.at<float>(0)), static_cast<int>(pred.at<float>(1)));
-    predictions.at(predictionsIdx).bbox.x = nextPred.x;
-    predictions.at(predictionsIdx).bbox.y = nextPred.y;
+    int nextPredX = static_cast<int>(pred.at<float>(0));
+    int nextPredY = static_cast<int>(pred.at<float>(1));
+    float nextPredA = pred.at<float>(2);
+    float nextPredR = pred.at<float>(3);
+    float widthf = sqrt(nextPredA/nextPredR);
+    float heightf = widthf * nextPredR;
+    int width = static_cast<int>(widthf);
+    int height = static_cast<int>(heightf);
+    predictions.at(predictionsIdx).bbox.x = nextPredX;
+    predictions.at(predictionsIdx).bbox.y = nextPredY;
+    predictions.at(predictionsIdx).bbox.width = width;
+    predictions.at(predictionsIdx).bbox.height = height;
 }
 
 void SORT::updatePredictions(int predictionsIdx){
@@ -154,9 +184,18 @@ void SORT::updatePredictions(int predictionsIdx){
     auto kalIt = find_if(kalmans.begin(), kalmans.end(), [object_id](const kals& kal){return kal.object_id == object_id;});
     int kalIdx = distance(kalmans.begin(), kalIt);
     Mat pred = kalmans.at(kalIdx).kf.predict();
-    Point nextPred = Point(static_cast<int>(pred.at<float>(0)), static_cast<int>(pred.at<float>(1)));
-    predictions.at(predictionsIdx).bbox.x = nextPred.x;
-    predictions.at(predictionsIdx).bbox.y = nextPred.y;
+    int nextPredX = static_cast<int>(pred.at<float>(0));
+    int nextPredY = static_cast<int>(pred.at<float>(1));
+    float nextPredA = pred.at<float>(2);
+    float nextPredR = pred.at<float>(3);
+    float widthf = sqrt(nextPredA/nextPredR);
+    float heightf = widthf * nextPredR;
+    int width = static_cast<int>(widthf);
+    int height = static_cast<int>(heightf);
+    predictions.at(predictionsIdx).bbox.x = nextPredX;
+    predictions.at(predictionsIdx).bbox.y = nextPredY;
+    predictions.at(predictionsIdx).bbox.width = width;
+    predictions.at(predictionsIdx).bbox.height = height;
 }
 
 void SORT::removeKalId(int object_id){

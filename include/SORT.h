@@ -9,15 +9,15 @@ class SORT{
 public:
     void sort(vector<Detection>& detections);
 
-    int calculateDistance(Rect point1, Rect point2);
-    
-    Mat getDistanceMatrix(vector<Detection> detection);
+    int calculateIOU(Rect box1, Rect box2);
+
+    Mat getIOUmatrix(vector<Detection> detections);
 
     void assignId(vector<Detection>& detections, vector<Point> starred);
 
     void reID(vector<Detection> detections);
 
-    void initKalman(KalmanFilter& kf, Point initialPoint);
+    void initKalman(KalmanFilter& kf, Rect initialDetection);
 
     void updatePredictions(Detection detect, int predictionsIdx);
 

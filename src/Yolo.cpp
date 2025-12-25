@@ -86,7 +86,7 @@ void Yolo::postprocess(vector<Detection>& output){
         double score;
         minMaxLoc(classes_scores, nullptr, &score, nullptr, &class_id_point);
 
-        if(score > conf_threshold && class_id_point.y == 41){
+        if(score > conf_threshold){
             const float cx = det_output.at<float>(0, i);
             const float cy = det_output.at<float>(1, i);
             const float ow = det_output.at<float>(2, i);
