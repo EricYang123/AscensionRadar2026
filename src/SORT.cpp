@@ -25,7 +25,7 @@ void SORT::sort(vector<Detection>& detections){
     }
     // distanceMatrix = getDistanceMatrix(detections);
     distanceMatrix = getIOUmatrix(detections);
-    cout << distanceMatrix << endl ;
+    // cout << distanceMatrix << endl ;
     if(distanceMatrix.empty()){
         reID(detections);
         return;
@@ -44,7 +44,7 @@ int SORT::calculateIOU(Rect box1, Rect box2){
     float intersectArea = horizontalOverlap * verticalOverlap;
     float unionArea = (box1.height * box1.width) + (box2.width * box2.height) - intersectArea;
     float iou = intersectArea / unionArea;
-    cout << iou << endl;
+    // cout << iou << endl;
     float bigIou = iou * 1000;
     int bigIouInt = static_cast<int>(bigIou);
     return 1000 - bigIouInt;

@@ -7,6 +7,7 @@ project(AscensionRadar2026 LANGUAGES CXX CUDA)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Define the path to TensorRT installation
 set(TENSORRT_PATH "/usr/include/aarch64-linux-gnu")  # Update this to the actual path for TensorRT
@@ -29,6 +30,8 @@ set(SOURCES
     src/Resnet.cpp
     src/SORT.cpp
     src/hungarian.cpp
+    src/laser.cpp
+    src/stereo.cpp
 )
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

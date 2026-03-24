@@ -1,13 +1,18 @@
 #include "Yolo.h"
 #include "layers.h"
 #include "Resnet.h"
+#include "SORT.h"
+#include "laser.h"
+#include "stereo.h"
 #include "NvInfer.h"
 #include "NvOnnxParser.h"
-#include "SORT.h"
+#include <opencv2/objdetect/aruco_dictionary.hpp>
 #include <opencv2/opencv.hpp>
 #include <fstream>
 #include <memory>
 #include <chrono>
+#include <cstring>
+#include <ratio>
 using namespace nvinfer1;
 using namespace nvonnxparser;
 using namespace std;
@@ -25,68 +30,57 @@ class Logger : public ILogger
 
 int main(){
     Logger logger;
-    // Logger logger2;
-    // Logger logger3;
     Yolo yolo;
-    // Yolo yolo2;
-    // Resnet resnet;
-    // Layers layers;
     SORT sort;
-
-    yolo.init("/root/workspace/yolo11n.engine", logger);
-    // yolo2.init("models/yolov12n.engine", logger2);
+    SORT sort2;
+    stereoCam stereo;
+    // laser serial("/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_3147374A3131-if00", B115200);
+    stereo.calibrate(Size(7, 5), 0.027f, 0.016f, aruco::DICT_6X6_50, "None");
+    // yolo.init("../models/yolo11n.engine", logger);
     // resnet.init("models/resnet18.engine", logger3);
     
-    VideoCapture cap(0);
-    // namedWindow("webcam", WINDOW_NORMAL);
-    // namedWindow("Cropped Image", WINDOW_AUTOSIZE);
-
-    Mat frame;
-    Mat cropped;
+    // VideoCapture capL(0);
+    // VideoCapture capR(2);
+    //
+    // Mat frameL;
+    // Mat frameR;
+    // Mat cropped;
+    // Mat combinedView;
     
-    int frames = 0;
-    while(true){
-        cap >> frame;
-
-        yolo.preprocess(frame);
-
-        yolo.infer();
-
-        vector<Detection> detected;
-        yolo.postprocess(detected);
-        auto start = std::chrono::high_resolution_clock::now();
-        sort.sort(detected);
-        auto timeNow = std::chrono::high_resolution_clock::now();
-        // cout << "detection vector size: " << detected.size() << endl;
-
-        yolo.display(frame, detected);
-        // layers.showLargestDetection(frame, detected, cropped);
-        
-        imshow("webcam", frame);
-
-        // yolo2.preprocess(cropped);
-        // resnet.preprocess(frame);
-
-        // yolo2.infer();
-        // resnet.infer();
-
-        // vector<Detection> detected2;
-        // yolo2.postprocess(detected2);
-        // resnet.postprocess();
-        // yolo.display(cropped, detected2);
-
-        // imshow("Cropped Image", cropped);
-        
-        frames++;
-        double elapsed_time = std::chrono::duration<double, std::micro>(timeNow - start).count();
-        // cout << "Time in microseconds: " << elapsed_time << endl;
-        if(waitKey(1) != -1){
-            break;
-        }
-    }
+ //    int frames = 0;
+ //    while(true){
+	// auto start = std::chrono::high_resolution_clock::now();
+ //        capL >> frameL;
+	// capR >> frameR;
+	//
+ //        yolo.preprocess(frameL);
+ //        yolo.infer();
+ //        vector<Detection> detected;
+ //        yolo.postprocess(detected);
+	// sort.sort(detected);
+ //        yolo.display(frameL, detected);
+	// 
+ //        yolo.preprocess(frameR);
+ //        yolo.infer();
+ //        vector<Detection> detected2;
+ //        yolo.postprocess(detected2);
+	// sort2.sort(detected2);
+ //        yolo.display(frameR, detected2);
+ //        
+	// hconcat(frameL, frameR, combinedView);
+	// namedWindow("Stereo View", WINDOW_NORMAL);
+ //        imshow("Stereo View", combinedView);
+ //        auto end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double, std::milli> duration = end - start;
+ //        cout << "Time in milliseconds: " << duration.count() << endl;
+ //        if(waitKey(1) != -1){
+ //            break;
+ //        }
+ //    }
     
 
-    cap.release();
+    // capR.release();
+    // capL.release();
     cv::destroyAllWindows();
     return 0;
 }
