@@ -1,14 +1,115 @@
 #include <cstdio>
 #include <iterator>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/core/persistence.hpp>
+#include <opencv2/core/utility.hpp>
+#include <opencv2/highgui.hpp>
 #include <stereo.h>
 #include <opencv2/opencv.hpp>
 
 stereoCam::stereoCam(){
-    initStereo();
 }
 
-void stereoCam::initStereo(){
+void stereoCam::initStereo(Mat imageL, Mat imageR){
+    sgbm = StereoSGBM::create(0, 16, 3);
 
+    FileStorage fs("intrinsics.yml", FileStorage::READ); 
+    fs["M1"] >> M1;
+    fs["D1"] >> D1;
+    fs["M2"] >> M2;
+    fs["D2"] >> D2;
+
+    fs.open("extrinsics.yml", FileStorage::READ);
+    fs["R"] >> R;
+    fs["T"] >> T;
+
+    img_size = imageL.size();
+    stereoRectify(M1, D1, M2, D2, img_size, R, T, R1, R2, P1, P2, Q, CALIB_ZERO_DISPARITY, -1, img_size, &roi1, &roi2);
+    initUndistortRectifyMap(M1, D1, R1, P1, img_size, CV_16SC2, map11, map12);
+    initUndistortRectifyMap(M2, D2, R2, P2, img_size, CV_16SC2, map21, map22);
+    numberOfDisparities = ((img_size.width/8) + 15) & -16;
+
+    sgbm->setPreFilterCap(63);
+    sgbmWinSize = 3;
+    cn = imageL.channels();
+
+    sgbm->setP1(8 * cn * sgbmWinSize * sgbmWinSize);
+    sgbm->setP1(32 * cn * sgbmWinSize * sgbmWinSize);
+    sgbm->setMinDisparity(0);
+    sgbm->setNumDisparities(numberOfDisparities);
+    sgbm->setUniquenessRatio(10);
+    sgbm->setSpeckleWindowSize(100);
+    sgbm->setSpeckleRange(32);
+    sgbm->setDisp12MaxDiff(1);
+    sgbm->setMode(StereoSGBM::MODE_SGBM);
+
+    cout << "P1 size: " << P1.size() << "\n";
+    f = P1.at<double>(0,0);
+    B = norm(T);
+}
+
+
+vector<double> stereoCam::get_depths(vector<Point> coordinates, Mat imageL, Mat imageR){
+    vector<double> depths;
+    Mat disp = getDisparity(imageL, imageR);
+
+    for(int i = 0; i < coordinates.size(); i++){
+	int x = coordinates[i].x;
+	int y = coordinates[i].y;
+	float d = disp.at<short>(y, x) / 16.0f;
+	if(d > 0){
+	    double depth = (B * f) / d;
+	    depths.push_back(depth);
+	}
+    }
+    // Mat dst;
+    // undistort(imageL, dst, M1, D1);
+    // imshow("left", dst);
+
+    return depths;
+}
+
+Mat stereoCam::getDisparity(Mat imageL, Mat imageR){
+
+
+    // NOTE: Rectify Image code
+    // Commented cause calibration is bad
+
+    // remap(imageL, img1r, map11, map12, INTER_LINEAR);
+    // remap(imageR, img2r, map21, map22, INTER_LINEAR);
+    //
+    // imageL = img1r;
+    // imageR = img2r;
+
+    Mat disp, disp8;
+
+    float disparity_multiplier = 1.0f;
+
+    int64 t = getTickCount();
+    sgbm->compute(imageL, imageR, disp);
+    if(disp.type() == CV_16S){
+	disparity_multiplier = 16.0f;
+    }
+
+    disp.convertTo(disp8, CV_8U, 255/(numberOfDisparities*16.));
+    t = getTickCount() - t;
+    cout << "Time elapsed: " << t * 1000 / getTickFrequency() << "\n";
+
+    if(display){
+	std::ostringstream oss;
+	oss << "disparity sgbm";
+	oss << " blocksize:" << sgbmWinSize;
+	oss << " max-disparity:" << numberOfDisparities;
+	std::string disp_name = oss.str();
+
+	namedWindow("left", cv::WINDOW_NORMAL);
+	imshow("left", imageL);
+	namedWindow("right", cv::WINDOW_NORMAL);
+	imshow("right", imageR);
+	namedWindow(disp_name, cv::WINDOW_NORMAL);
+	imshow(disp_name, disp8);
+    }
+    return disp8;
 }
 
 void stereoCam::calibrate(Size inputBoardSize, float squareSize, float markerSize, aruco::PredefinedDictionaryType arucoDict, 
@@ -172,6 +273,7 @@ void stereoCam::calibrate(Size inputBoardSize, float squareSize, float markerSiz
     }
 
     bool isVerticalStereo = fabs(P2.at<double>(1, 3)) > fabs(P2.at<double>(0, 3));
+    isVerticalStereo = false;
 
     if(!showRectified){
 	return;
