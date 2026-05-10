@@ -6,6 +6,7 @@
 #include "stereo.h"
 #include "NvInfer.h"
 #include "NvOnnxParser.h"
+#include <opencv2/highgui.hpp>
 #include <opencv2/objdetect/aruco_dictionary.hpp>
 #include <opencv2/opencv.hpp>
 #include <fstream>
@@ -33,49 +34,60 @@ int main(){
     Yolo yolo;
     SORT sort;
     SORT sort2;
-    stereoCam stereo;
-    // laser serial("/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_3147374A3131-if00", B115200);
+    // stereoCam stereo;
+    laser serial("/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_3147374A3131-if00", B115200);
     // stereo.calibrate(Size(7, 5), 0.027f, 0.016f, aruco::DICT_6X6_50, "None");
-    // yolo.init("../models/yolo11n.engine", logger);
+    yolo.init("../yolo11n.engine", logger);
     // resnet.init("models/resnet18.engine", logger3);
     
     VideoCapture capL(0);
-    VideoCapture capR(2);
+    // VideoCapture capR(2);
 
     Mat frameL;
-    Mat frameR;
-    vector<Point> coords;
-    coords.push_back(Point(300, 300));
+    // Mat frameR;
+    // vector<Point> coords;
     // Mat cropped;
     // Mat combinedView;
 
-    capL >> frameL;
-    capR >> frameR;
-    stereo.initStereo(frameL, frameR);
+    // capR >> frameR;
+    // stereo.initStereo(frameL, frameR);
     // int frames = 0;
+    serial.setServoAngle(135, 135);
+    int counter = 0;
     while(true){
-	auto start = std::chrono::high_resolution_clock::now();
-        capL >> frameL;
-	capR >> frameR;
-	imshow("left", frameL);
-	imshow("right", frameR);
-
-	vector<double> depths;
-	depths = stereo.get_depths(coords, frameL, frameR);
-
-	for(int i = 0; i < depths.size(); i++){
-	    cout << depths[i] << "\n";
+	capL >> frameL;
+	yolo.preprocess(frameL);
+	yolo.infer();
+	vector<Detection> detections;
+	yolo.postprocess(detections);
+	counter++;
+	for(int i = 0; i < detections.size(); i++){
+	    if(detections[i].class_id == 39){
+		int xcoord = detections[i].bbox.x + detections[i].bbox.width / 2;
+		int ycoord = detections[i].bbox.y + detections[i].bbox.height / 2;
+		cout << "Detections: " << xcoord << "," << ycoord << "\n";
+		if(counter > 5){
+		    serial.aimLaser(xcoord, ycoord);
+		    counter = 0;
+		}
+		break;
+	    }
 	}
-        auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> duration = end - start;
-        // cout << "Time in milliseconds: " << duration.count() << endl;
+	yolo.display(frameL, detections);
+	imshow("Window", frameL);
+
         if(waitKey(1) != -1){
             break;
         }
     }
     
+ //    while(true){
+	// int x, y;
+	// cin >> x >> y;
+	// serial.setServoAngle(x, y);
+    // }
 
-    capR.release();
+    // capR.release();
     capL.release();
     cv::destroyAllWindows();
     return 0;

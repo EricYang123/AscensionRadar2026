@@ -1,4 +1,5 @@
 #include "laser.h"
+#include <cmath>
 #include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
@@ -73,16 +74,42 @@ void laser::closePort() {
 
 void laser::setServoAngle(int servox, int servoy){
 
-        uint8_t buffer[8];
-        buffer[0] = static_cast<uint8_t> (servox & 0xFF);
-        buffer[1] = static_cast<uint8_t> ((servox >> 8) & 0xFF);
-        buffer[2] = static_cast<uint8_t> ((servox >> 16) & 0xFF);
-        buffer[3] = static_cast<uint8_t> ((servox >> 24) & 0xFF);
+    uint8_t buffer[8];
+    buffer[0] = static_cast<uint8_t> (servox & 0xFF);
+    buffer[1] = static_cast<uint8_t> ((servox >> 8) & 0xFF);
+    buffer[2] = static_cast<uint8_t> ((servox >> 16) & 0xFF);
+    buffer[3] = static_cast<uint8_t> ((servox >> 24) & 0xFF);
 
-        buffer[4] = static_cast<uint8_t> (servoy & 0xFF);
-        buffer[5] = static_cast<uint8_t> ((servoy >> 8) & 0xFF);
-        buffer[6] = static_cast<uint8_t> ((servoy >> 16) & 0xFF);
-        buffer[7] = static_cast<uint8_t> ((servoy >> 24) & 0xFF);
-        // cout << message << "\n";
-        send( buffer, sizeof(buffer));
+    buffer[4] = static_cast<uint8_t> (servoy & 0xFF);
+    buffer[5] = static_cast<uint8_t> ((servoy >> 8) & 0xFF);
+    buffer[6] = static_cast<uint8_t> ((servoy >> 16) & 0xFF);
+    buffer[7] = static_cast<uint8_t> ((servoy >> 24) & 0xFF);
+    // cout << message << "\n";
+    send( buffer, sizeof(buffer));
+}
+
+void laser::aimLaser(int detectx, int detecty){
+    int xcoord = detectx - 320;
+    int ycoord = detecty - 320;
+    int changeX = asin(xcoord * sin(M_PI / 4) / 320) * 180 / M_PI;
+    int changeY = asin(ycoord * sin(M_PI / 4) / 320) * 180 / M_PI;
+    int servox = currentServoX - changeX; 
+    int servoy = currentServoY - changeY; 
+    if(servox < 0){
+	servox = 0;
+    }
+    if(servoy < 0){
+	servoy = 0;
+    }
+    if(servox > 270){
+	servox = 270;
+    }
+    if(servoy > 270){
+	servoy = 270;
+    }
+    std::cout << "Changes: " << changeX << "," << changeY << "\n";
+    std::cout << "Angle: " << servox << "," << servoy << "\n";
+    setServoAngle(servox, servoy);
+    currentServoX = servox;
+    currentServoY = servoy;
 }
